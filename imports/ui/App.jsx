@@ -5,7 +5,7 @@ import Info from './Info.jsx';
 const App = () => {
   return (
     <div>
-      <h1>Welcome to Meteor!</h1>
+      <h1>Welcome to MMeteor!</h1>
       <Hello />
       <Info />
     </div>
