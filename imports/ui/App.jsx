@@ -1,13 +1,14 @@
 import React from 'react';
-import Hello from './Hello.jsx';
-import Info from './Info.jsx';
+import { Provider } from 'react-redux';
+import store from '../redux/store/store';
+import ReduxWrapper from './ReduxWrapper';
 
 const App = () => {
   return (
     <div>
-      <h1>Welcome to Meteor!</h1>
-      <Hello />
-      <Info />
+      <Provider store={store}>
+        <ReduxWrapper />
+      </Provider>
     </div>
   );
 };
