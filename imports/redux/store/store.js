@@ -1,14 +1,17 @@
-import { createStore, applyMiddleware } from 'redux';
+import { createStore, applyMiddleware, compose } from 'redux';
 import ReduxThunk from 'redux-thunk';
-import sortReducer from '../reducers/sortReducer';
+import appReducer from '../reducers/sortReducer';
 
 const initialState = {
-  sort: -1,
+  sort: 1,
+  loadPagination: 5,
 };
 
+const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 const store = createStore(
-  sortReducer,
+  appReducer,
   initialState,
-  applyMiddleware(ReduxThunk)
+  composeEnhancers(applyMiddleware(ReduxThunk))
 );
+
 export default store;

@@ -2,6 +2,6 @@
 import { Meteor } from 'meteor/meteor';
 import Tasks from '../tasks';
 
-Meteor.publish('tasks', function tasksPublication () {
-  return Tasks.find();
+Meteor.publish('tasks', function tasksPublication (limit = 10) {
+  return Tasks.find({}, {limit});
 });

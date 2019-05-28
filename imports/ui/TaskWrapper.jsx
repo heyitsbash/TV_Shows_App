@@ -6,9 +6,26 @@ import { Meteor } from 'meteor/meteor';
 import { useDispatch } from 'react-redux';
 import tasksInsert from "../redux/actions/insertTask";
 import sortAction from "../redux/actions/sortAction";
+import callTrakt from '../redux/actions/tracktCall';
+import loadPaginationAction from '../redux/actions/loadPaginationAction';
 import Tasks from '../api/tasks';
 import Task from './Task';
 
+
+// Meteor.call('callTraktAPI', 'https://api.trakt.tv/shows/trending', (error, data) => {
+
+//   if (error) {
+//     console.log("this is eror");
+    
+//     console.log(error);
+//   } else {
+//     console.log(data);
+    
+//     // data.data.map((e) => {
+//     //   console.log(e);
+//     // });
+//   }
+// });
 
 const TaskWrapper = ({ tasks, incompleteCount }) => {
   const [inputVal, setInputVal] = useState("");
@@ -17,7 +34,8 @@ const TaskWrapper = ({ tasks, incompleteCount }) => {
   const dispatch = useDispatch();
   const insertTask = (text) => dispatch(tasksInsert(text));
   const sortingAction = () => dispatch(sortAction());
-  
+  const callingTrakt = (url) => dispatch(callTrakt(url));
+  const paginationLoad = (pages) => dispatch(loadPaginationAction(pages));
 	
   const renderTasks = () => {
     let filteredTasks = tasks;
@@ -31,11 +49,19 @@ const TaskWrapper = ({ tasks, incompleteCount }) => {
     sortingAction();
   };
 
+  const testAPIcall = () => {
+    callingTrakt('https://api.trakt.tv/shows/trending');
+  };
+
+  const loadMorePages = () => {
+    paginationLoad(5);
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
     const text = inputVal.trim();
     if (text === '') {
-      return
+      return;
     }
     // Meteor.call('tasksInsert', text);
     insertTask(text);
@@ -46,7 +72,9 @@ const TaskWrapper = ({ tasks, incompleteCount }) => {
     <div className="container">
       <header>
         <h1>Todo List - {incompleteCount}</h1>
-        <button type="button" onClick={changeListOrder}>Change order</button>
+        <button type="button" onClick={changeListOrder}>Order</button>
+        <button type="button" onClick={testAPIcall}>Test API</button>
+        <button type="button" onClick={loadMorePages}>Load More</button>
         <label htmlFor="hideCompletedInputId" className="hide-completed">
           <input 
             id="hideCompletedInputId" 
@@ -81,7 +109,8 @@ TaskWrapper.propTypes = {
 TaskWrapper.displayName = 'TaskWrapper';
 
 export default withTracker(( props ) => {
-  Meteor.subscribe('tasks');
+  const {loadPagination} = props.storeValue;
+  Meteor.subscribe('tasks', loadPagination);
   const sortMethod = props.storeValue.sort;  
 
   return {
@@ -91,4 +120,3 @@ export default withTracker(( props ) => {
       .count(),
   };
 })(TaskWrapper);
-
