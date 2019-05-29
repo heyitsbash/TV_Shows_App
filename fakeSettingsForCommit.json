@@ -1,0 +1,9 @@
+{
+	"public": {
+		"test": "Hi from client"
+	},
+	"private": {
+		"test": "Hi from server",
+		"traktApiKey": "Your_Tract_Api_key"
+	}
+}

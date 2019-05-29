@@ -3,7 +3,8 @@ import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 import Axios from 'axios';
 import Tasks from '../tasks';
-import { apiSettings } from './options/settings';
+
+const traktAPIKey = Meteor.settings.private.traktApiKey;
 
 Meteor.methods({
   tasksInsert (text) {
@@ -30,7 +31,7 @@ Meteor.methods({
       headers: {
         'Content-Type': 'application/json',
         'trakt-api-version': 2,
-        'trakt-api-key': apiSettings.traktApiKey,
+        'trakt-api-key': traktAPIKey,
       },
     })
       .then((data) => {
