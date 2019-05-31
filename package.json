@@ -1,5 +1,5 @@
 {
-  "name": "TV_Shows_App",
+  "name": "tv_shows_app",
   "private": true,
   "scripts": {
     "start": "meteor --settings settings.json",
@@ -15,7 +15,7 @@
     "meteor-node-stubs": "^0.4.1",
     "react": "^16.5.0",
     "react-dom": "^16.5.0",
-    "react-redux": "^7.1.0-alpha.5",
+    "react-redux": "^7.1.0-rc.1",
     "redux": "^4.0.1",
     "redux-thunk": "^2.3.0"
   },
@@ -38,10 +38,10 @@
     "babel-eslint": "^10.0.1",
     "eslint": "^5.16.0",
     "eslint-config-airbnb": "^17.1.0",
-    "eslint-config-heyitsbash": "^0.2.2",
+    "eslint-config-heyitsbash": "^0.2.3",
     "eslint-config-prettier": "^4.3.0",
     "eslint-plugin-html": "^5.0.5",
-    "eslint-plugin-import": "^2.17.2",
+    "eslint-plugin-import": "^2.17.3",
     "eslint-plugin-jsx-a11y": "^6.2.1",
     "eslint-plugin-prettier": "^3.1.0",
     "eslint-plugin-react": "^7.13.0",

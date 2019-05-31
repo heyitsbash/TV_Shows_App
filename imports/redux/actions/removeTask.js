@@ -1,8 +1,7 @@
-/* eslint-disable prettier/prettier */
 import { Meteor } from 'meteor/meteor';
 
-export default function tasksRemove (task) {
+export default (task) => {
   return () => {
     Meteor.call('tasksRemove', task._id);
   };
-}
+};

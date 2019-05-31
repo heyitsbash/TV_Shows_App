@@ -1,7 +1,6 @@
-/* eslint-disable prettier/prettier */
 import React from 'react';
 import { useSelector } from 'react-redux';
-import TaskWrapper from './TaskWrapper';
+import TaskWrapper from './TaskWrapper.jsx';
 
 const ReduxWrapper = () => {
   const storeValue = useSelector((value) => value);
@@ -12,7 +11,6 @@ const ReduxWrapper = () => {
     </div>
   );
 };
-
 
 ReduxWrapper.displayName = 'ReduxWrapper';
 export default ReduxWrapper;

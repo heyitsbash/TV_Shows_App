@@ -1,13 +1,12 @@
-/* eslint-disable prettier/prettier */
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 import Axios from 'axios';
-import Tasks from '../tasks';
+import Tasks from '../collections/tasks.js';
 
 const traktAPIKey = Meteor.settings.private.traktApiKey;
 
 Meteor.methods({
-  tasksInsert (text) {
+  tasksInsert: (text) => {
     check(text, String);
 
     return Tasks.insert({
@@ -15,16 +14,16 @@ Meteor.methods({
       createdAt: new Date(),
     });
   },
-  tasksRemove (id) {
+  tasksRemove: (id) => {
     check(id, String);
     return Tasks.remove(id);
   },
-  tasksSetChecked (id, setChecked) {
+  tasksSetChecked: (id, setChecked) => {
     check(id, String);
     check(setChecked, Boolean);
     return Tasks.update(id, { $set: { checked: setChecked } });
   },
-  callTraktAPI (url) {
+  callTraktAPI: (url) => {
     return Axios({
       method: 'get',
       url,
@@ -39,7 +38,7 @@ Meteor.methods({
         const successResponse = {
           type: 'success',
           data: response,
-        };        
+        };
         return successResponse;
       })
       .catch((error) => {

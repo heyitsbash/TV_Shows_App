@@ -1,7 +1,6 @@
-/* eslint-disable prettier/prettier */
-export default function loadPaginationAction (pages) {
+export default (pages) => {
   return {
     type: 'LOAD_PAGINATION',
     payload: pages,
   };
-}
+};

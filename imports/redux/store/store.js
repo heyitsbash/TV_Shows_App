@@ -1,6 +1,6 @@
 import { createStore, applyMiddleware, compose } from 'redux';
 import ReduxThunk from 'redux-thunk';
-import appReducer from '../reducers/sortReducer';
+import appReducer from '../reducers/sortReducer.js';
 
 const initialState = {
   sort: 1,

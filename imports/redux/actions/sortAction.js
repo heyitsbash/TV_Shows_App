@@ -1,6 +1,5 @@
-/* eslint-disable prettier/prettier */
-export default function sortAction () {
+export default () => {
   return {
     type: 'SET_SORTING',
   };
-}
+};
