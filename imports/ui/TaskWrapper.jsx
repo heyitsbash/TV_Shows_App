@@ -7,10 +7,10 @@ import tasksInsert from '../redux/actions/insertTask.js';
 import sortAction from '../redux/actions/sortAction.js';
 import callTrakt from '../redux/actions/tracktCall.js';
 import loadPaginationAction from '../redux/actions/loadPaginationAction.js';
-import Tasks from '../api/collections/tasks.js';
+import tvShows from '../api/collections/tvShows.js';
 import Task from './Task.jsx';
 
-const TaskWrapper = ({ tasks, incompleteCount }) => {
+const TaskWrapper = ({ shows, incompleteCount }) => {
   const [inputVal, setInputVal] = useState('');
   const [hideCompleted, setHideCompleted] = useState(false);
 
@@ -21,19 +21,27 @@ const TaskWrapper = ({ tasks, incompleteCount }) => {
   const paginationLoad = (pages) => dispatch(loadPaginationAction(pages));
 
   const renderTasks = () => {
-    let filteredTasks = tasks;
+    let filteredTasks = shows;
     if (hideCompleted) {
-      filteredTasks = filteredTasks.filter((task) => !task.checked);
+      filteredTasks = filteredTasks.filter((show) => !show.checked);
     }
-    return filteredTasks.map((task) => <Task key={task._id} task={task} />);
+    return filteredTasks.map((show) => <Task key={show._id} show={show} />);
   };
 
   const changeListOrder = () => {
     sortingAction();
   };
 
+  // const page = 0;
   const testAPIcall = () => {
-    callingTrakt('https://api.trakt.tv/shows/trending');
+    callingTrakt('https://api.trakt.tv/shows/watched/all?page=1&limit=5');
+    // callingTrakt('https://api.trakt.tv/shows/1390?extended=full');
+    // page += 1;
+    // console.log(page);
+    // const url = `https://api.trakt.tv/shows/watched/all?page=${page}&limit=1`;
+    // console.log(url);
+    // Meteor.call('callTraktAPI', url);
+    // callingTrakt(url);
   };
 
   const loadMorePages = () => {
@@ -71,7 +79,7 @@ const TaskWrapper = ({ tasks, incompleteCount }) => {
             checked={hideCompleted}
             onClick={() => setHideCompleted(!hideCompleted)}
           />
-          Hide completed tasks
+          Hide completed shows
         </label>
         <form onSubmit={handleSubmit} className="new-task">
           <input
@@ -88,7 +96,7 @@ const TaskWrapper = ({ tasks, incompleteCount }) => {
 };
 
 TaskWrapper.propTypes = {
-  tasks: PropTypes.array.isRequired,
+  shows: PropTypes.array.isRequired,
   incompleteCount: PropTypes.number.isRequired,
 };
 
@@ -96,11 +104,13 @@ TaskWrapper.displayName = 'TaskWrapper';
 
 export default withTracker((props) => {
   const { loadPagination } = props.storeValue;
-  Meteor.subscribe('tasks', loadPagination);
+  Meteor.subscribe('tvShows', loadPagination);
   const sortMethod = props.storeValue.sort;
 
   return {
-    tasks: Tasks.find({}, { sort: { createdAt: sortMethod } }).fetch(),
-    incompleteCount: Tasks.find({ checked: { $ne: true } }).count(),
+    shows: tvShows
+      .find({}, { sort: { 'watched.allTime': sortMethod } })
+      .fetch(),
+    incompleteCount: tvShows.find({ checked: { $ne: true } }).count(),
   };
 })(TaskWrapper);

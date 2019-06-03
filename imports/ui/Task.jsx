@@ -4,20 +4,20 @@ import { useDispatch } from 'react-redux';
 import tasksSetChecked from '../redux/actions/checkTasks.js';
 import tasksRemove from '../redux/actions/removeTask.js';
 
-const Task = ({ task }) => {
+const Task = ({ show }) => {
   const dispatch = useDispatch();
   const checkTasks = (value) => dispatch(tasksSetChecked(value));
   const removeTask = (value) => dispatch(tasksRemove(value));
 
   const toggleChecked = () => {
-    checkTasks(task);
+    checkTasks(show);
   };
 
   const deleteTask = () => {
-    removeTask(task);
+    removeTask(show);
   };
 
-  const taskClassName = task.checked ? 'checked' : '';
+  const taskClassName = show.checked ? 'checked' : '';
   return (
     <li className={taskClassName}>
       <button onClick={deleteTask} type="button" className="delete">
@@ -26,16 +26,16 @@ const Task = ({ task }) => {
       <input
         type="checkbox"
         readOnly
-        checked={!!task.checked}
+        checked={!!show.checked}
         onClick={toggleChecked}
       />
-      <span className="text">{task.text}</span>
+      <span className="text">{show.title}</span>
     </li>
   );
 };
 
 Task.propTypes = {
-  task: PropTypes.object.isRequired,
+  show: PropTypes.object.isRequired,
 };
 Task.displayName = 'Task';
 export default Task;

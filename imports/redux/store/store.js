@@ -3,7 +3,7 @@ import ReduxThunk from 'redux-thunk';
 import appReducer from '../reducers/sortReducer.js';
 
 const initialState = {
-  sort: 1,
+  sort: -1,
   loadPagination: 5,
 };
 
