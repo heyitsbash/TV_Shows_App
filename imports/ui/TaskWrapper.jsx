@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { withTracker } from 'meteor/react-meteor-data';
 import { Meteor } from 'meteor/meteor';
@@ -20,6 +20,22 @@ const TaskWrapper = ({ shows, incompleteCount }) => {
   const callingTrakt = (url) => dispatch(callTrakt(url));
   const paginationLoad = (pages) => dispatch(loadPaginationAction(pages));
 
+  const handleScroll = () => {
+    const scrolledBy = window.innerHeight + window.pageYOffset;
+    const bottomOfThePage = document.body.scrollHeight;
+    // const calculateScrollBorder = bottomOfThePage - bottomOfThePage * 0.1;
+    if (scrolledBy >= bottomOfThePage) {
+      paginationLoad(50);
+    }
+  };
+
+  useEffect(() => {
+    window.addEventListener('scroll', handleScroll);
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  });
+
   const renderTasks = () => {
     let filteredTasks = shows;
     if (hideCompleted) {
@@ -34,8 +50,8 @@ const TaskWrapper = ({ shows, incompleteCount }) => {
 
   // const page = 0;
   const testAPIcall = () => {
-    callingTrakt('https://api.trakt.tv/shows/watched/all?page=1&limit=5');
-    // callingTrakt('https://api.trakt.tv/shows/1390?extended=full');
+    // callingTrakt('https://api.trakt.tv/shows/trending?page=1&limit=10000');
+    callingTrakt('https://api.trakt.tv/shows/464?extended=full');
     // page += 1;
     // console.log(page);
     // const url = `https://api.trakt.tv/shows/watched/all?page=${page}&limit=1`;
@@ -45,7 +61,7 @@ const TaskWrapper = ({ shows, incompleteCount }) => {
   };
 
   const loadMorePages = () => {
-    paginationLoad(5);
+    paginationLoad(50);
   };
 
   const handleSubmit = (e) => {
