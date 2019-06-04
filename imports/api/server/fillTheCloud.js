@@ -8,9 +8,26 @@ const tmdbAPIKey = Meteor.settings.private.tmdbApiKey;
 let withoutImagesDB = [];
 let tmdbInterval = '';
 
-const fetchAdditionalData = () => {
+const fetchAdditionalData = async () => {
   const fortyItems = withoutImagesDB.splice(0, 40);
-  if (!withoutImagesDB.length) {
+  const imagesToFetch = withoutImagesDB.length;
+  const brokenUrlTvShows = [];
+
+  if (imagesToFetch) {
+    console.log(`Items left to fetch: ${imagesToFetch}`);
+  } else {
+    console.log('Done fetching images');
+  }
+
+  const handleBadShows = () => {
+    console.log(`handling ${brokenUrlTvShows.length} bad shows`);
+    brokenUrlTvShows.forEach((element) => {
+      tvShows.remove({ showId: element });
+    });
+    console.log('Done');
+  };
+
+  if (!imagesToFetch) {
     Meteor.clearInterval(tmdbInterval);
   }
 
@@ -35,14 +52,33 @@ const fetchAdditionalData = () => {
         }
       );
     } catch (error) {
-      console.log(error);
+      const errorMessage = {
+        status: error.response.status,
+        statusText: error.response.statusText,
+        failedUrl: error.response.config.url,
+        method: error.response.config.method,
+        statusCode: error.response.data.status_code,
+        statusMessage: error.response.data.status_message,
+        showTitle: val.title,
+        showId: val.showId,
+      };
+      brokenUrlTvShows.push(errorMessage.showId);
+      // console.log(errorMessage);
     }
   };
-  fortyItems.forEach((val) => {
-    const showId = val.idList.tmdb;
-    const url = `https://api.themoviedb.org/3/tv/${showId}?api_key=${tmdbAPIKey}&language=en-US&append_to_response=images,videos&include_image_language=ru,null`;
-    makeCall(url, val);
-  });
+
+  await Promise.all(
+    fortyItems.map(async (val) => {
+      const showId = val.idList.tmdb;
+      if (!showId) {
+        brokenUrlTvShows.push(val.showId);
+        return;
+      }
+      const url = `https://api.themoviedb.org/3/tv/${showId}?api_key=${tmdbAPIKey}&language=en-US&append_to_response=images,videos&include_image_language=ru,null`;
+      await makeCall(url, val);
+    })
+  );
+  handleBadShows();
 };
 
 const anotherAxiosCall = async () => {
@@ -52,7 +88,6 @@ const anotherAxiosCall = async () => {
 
     if (withoutImagesDB.length) {
       console.log('Yes');
-
       tmdbInterval = Meteor.setInterval(() => {
         fetchAdditionalData(withoutImagesDB);
       }, 12000);
@@ -110,10 +145,6 @@ const axiosCall = async (url) => {
   }
 };
 
-Meteor.setTimeout(() => {
-  axiosCall('https://api.trakt.tv/shows/watched/all?page=1&limit=150');
-}, 3000);
-
 Meteor.setInterval(() => {
-  axiosCall('https://api.trakt.tv/shows/watched/all?page=1&limit=150');
+  axiosCall('https://api.trakt.tv/shows/watched/all?page=1&limit=10000');
 }, 86400000);
