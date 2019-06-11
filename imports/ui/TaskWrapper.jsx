@@ -14,23 +14,12 @@ import sortAction from '../redux/actions/sortAction.js';
 import callTrakt from '../redux/actions/tracktCall.js';
 import loadPaginationAction from '../redux/actions/loadPaginationAction.js';
 import tvShows from '../api/collections/tvShows.js';
-// import 'react-virtualized/styles.css';
 
-const TaskWrapper = ({ shows, incompleteCount }) => {
+const TaskWrapper = ({ shows, showCount }) => {
   const dispatch = useDispatch();
   const sortingAction = () => dispatch(sortAction());
   const callingTrakt = (url) => dispatch(callTrakt(url));
   const paginationLoad = (pages) => dispatch(loadPaginationAction(pages));
-
-  const lust = shows.map((show, index) => {
-    return {
-      index: index + 1,
-      name: show.title,
-      description: show.watched.allTime,
-      airDate: show.additionalInfo.first_air_date,
-      img: `https://image.tmdb.org/t/p/w780${show.image}`,
-    };
-  });
 
   const changeListOrder = () => {
     sortingAction();
@@ -46,7 +35,10 @@ const TaskWrapper = ({ shows, incompleteCount }) => {
 
   // eslint-disable-next-line react/prop-types
   const renderImageCell = ({ cellData }) => {
-    return <img src={cellData} alt="" height="250px" />;
+    const image = `https://image.tmdb.org/t/p/w780${cellData}`;
+    return (
+      <div className="tableImg" style={{ backgroundImage: `url(${image})` }} />
+    );
   };
 
   const renderIndexCell = ({ rowIndex }) => {
@@ -58,8 +50,7 @@ const TaskWrapper = ({ shows, incompleteCount }) => {
 
   return (
     <div className="container">
-      <header>
-        <h1>TV Shows - {incompleteCount}</h1>
+      <div className="tableHeader">
         <button type="button" onClick={changeListOrder}>
           Order
         </button>
@@ -69,10 +60,10 @@ const TaskWrapper = ({ shows, incompleteCount }) => {
         <button type="button" onClick={loadMorePages}>
           Load More
         </button>
-      </header>
+      </div>
       <div>
         <InfiniteLoader
-          isRowLoaded={({ index }) => !!lust[index]}
+          isRowLoaded={({ index }) => !!shows[index]}
           loadMoreRows={loadMorePages}
           rowCount={100000000}
         >
@@ -82,22 +73,17 @@ const TaskWrapper = ({ shows, incompleteCount }) => {
                 <AutoSizer disableHeight>
                   {({ width }) => (
                     <Table
+                      autoHeight
+                      overscanRowCount={4}
                       ref={registerChild}
                       onRowsRendered={onRowsRendered}
-                      autoHeight
-                      headerStyle={{
-                        display: 'flex',
-                      }}
-                      rowStyle={{
-                        display: 'flex',
-                      }}
                       width={width}
                       scrollTop={scrollTop}
                       height={height}
                       headerHeight={30}
                       rowHeight={250}
-                      rowCount={lust.length}
-                      rowGetter={({ index }) => lust[index]}
+                      rowCount={showCount}
+                      rowGetter={({ index }) => shows[index]}
                     >
                       <Column
                         label="№"
@@ -108,18 +94,31 @@ const TaskWrapper = ({ shows, incompleteCount }) => {
                       <Column
                         cellRenderer={renderImageCell}
                         label="img"
-                        dataKey="img"
+                        dataKey="image"
+                        cellDataGetter={({ rowData }) => rowData.image}
                         width={width * 0.25}
                       />
-                      <Column label="Name" dataKey="name" width={width * 0.3} />
+                      <Column
+                        label="Name"
+                        dataKey="title"
+                        width={width * 0.3}
+                      />
                       <Column
                         label="Views Count"
-                        dataKey="description"
+                        dataKey="watched_allTime"
+                        cellDataGetter={({ rowData }) =>
+                          rowData.watched.allTime
+                            .toString()
+                            .replace(/\d(?=(?:\d{3})+$)/g, '$&,')
+                        }
                         width={width * 0.2}
                       />
                       <Column
                         label="First Air Date"
-                        dataKey="airDate"
+                        dataKey="first_air_date"
+                        cellDataGetter={({ rowData }) =>
+                          rowData.additionalInfo.first_air_date
+                        }
                         width={width * 0.2}
                       />
                     </Table>
@@ -136,7 +135,7 @@ const TaskWrapper = ({ shows, incompleteCount }) => {
 
 TaskWrapper.propTypes = {
   shows: PropTypes.array.isRequired,
-  incompleteCount: PropTypes.number.isRequired,
+  showCount: PropTypes.number.isRequired,
 };
 
 TaskWrapper.displayName = 'TaskWrapper';
@@ -150,6 +149,6 @@ export default withTracker((props) => {
     shows: tvShows
       .find({}, { sort: { 'watched.allTime': sortMethod } })
       .fetch(),
-    incompleteCount: tvShows.find({ checked: { $ne: true } }).count(),
+    showCount: tvShows.find({}).count(),
   };
 })(TaskWrapper);
