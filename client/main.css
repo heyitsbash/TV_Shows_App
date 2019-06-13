@@ -8,117 +8,139 @@ body {
   bottom: 0;
   left: 0;
   right: 0;
- 
   padding: 0;
   margin: 0;
- 
   font-size: 14px;
 }
  
 .container {
-  max-width: 600px;
+  max-width: 900px;
   margin: 0 auto;
   min-height: 100%;
-  background: white;
+}
+
+.tableImg {
+  height: 210px;
+  width: 150px;
+  margin-bottom: 8px;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  border: 1px solid black;
 }
  
-header {
-  background: #d2edf4;
-  background-image: linear-gradient(to bottom, #d0edf5, #e1e5f0 100%);
-  padding: 20px 15px 15px 15px;
-  position: relative;
-}
- 
-#login-buttons {
-  display: block;
-}
- 
-h1 {
-  font-size: 1.5em;
-  margin: 0;
-  margin-bottom: 10px;
-  display: inline-block;
-  margin-right: 1em;
-}
- 
-form {
-  margin-top: 10px;
-  margin-bottom: -10px;
-  position: relative;
-}
- 
-.new-task input {
+
+.tableHeader {
+  min-width: 900px;
+  margin: 0 auto;
+  background-color: #315481;
+  background-image: linear-gradient(to top, #0052d4, #4364f7, #6fb1fc);
   box-sizing: border-box;
-  padding: 10px 0;
-  background: transparent;
-  border: none;
+  height: 56px;
+  position: fixed;
+  z-index: 10;
+  text-align: center;
+}
+
+.ReactVirtualized__Table {
+  position: relative;
+  top: 91px;
+}
+
+.ReactVirtualized__Table__Grid {
+}
+
+.ReactVirtualized__Table__headerRow {
+  background-color: white;
+  z-index: 10;
+  position: fixed;
+  top: 56px;
+  font-weight: 700;
+  text-transform: uppercase;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: horizontal;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: row;
+          flex-direction: row;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+          text-align: center;
+}
+
+.ReactVirtualized__Table__row {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: horizontal;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: row;
+          flex-direction: row;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+          border-radius: 0 0 15px 15px;
+          text-align: center;
+          font-size: 16px;
+}
+
+.ReactVirtualized__Table__row:after {
+  content: '';
+  position: absolute;
+  bottom: 0px;
+  left: 0;
   width: 100%;
-  padding-right: 80px;
-  font-size: 1em;
+  height: 10px;
+  background-color: #315481;
 }
- 
-.new-task input:focus{
-  outline: 0;
+
+.ReactVirtualized__Table__row:nth-child(odd) {
+  background: #fafafa;
 }
- 
-ul {
-  margin: 0;
-  padding: 0;
-  background: white;
+
+.ReactVirtualized__Table__row:nth-child(even) {
+  background: #ebebeb;
 }
- 
-.delete {
-  float: right;
-  font-weight: bold;
-  background: none;
-  font-size: 1em;
-  border: none;
-  position: relative;
+
+.ReactVirtualized__Table__headerTruncatedText {
+  display: inline-block;
+  max-width: 100%;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
 }
- 
-li {
-  position: relative;
-  list-style: none;
-  padding: 15px;
-  border-bottom: #eee solid 1px;
+
+.ReactVirtualized__Table__headerColumn,
+.ReactVirtualized__Table__rowColumn {
 }
- 
-li .text {
-  margin-left: 10px;
+.ReactVirtualized__Table__rowColumn {
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
- 
-li.checked {
-  color: #888;
+
+.ReactVirtualized__Table__headerColumn:first-of-type,
+.ReactVirtualized__Table__rowColumn:first-of-type {
 }
- 
-li.checked .text {
-  text-decoration: line-through;
+
+.ReactVirtualized__Table__sortableHeaderColumn {
+  cursor: pointer;
 }
- 
-li.private {
-  background: #eee;
-  border-color: #ddd;
+
+.ReactVirtualized__Table__sortableHeaderIconContainer {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
 }
- 
-header .hide-completed {
-  float: right;
-}
- 
-.toggle-private {
-  margin-left: 5px;
-}
- 
-@media (max-width: 600px) {
-  li {
-    padding: 12px 15px;
-  }
- 
-  .search {
-    width: 150px;
-    clear: both;
-  }
- 
-  .new-task input {
-    padding-bottom: 5px;
-  }
+.ReactVirtualized__Table__sortableHeaderIcon {
+  -webkit-box-flex: 0;
+      -ms-flex: 0 0 24px;
+          flex: 0 0 24px;
+  height: 1em;
+  width: 1em;
+  fill: currentColor;
 }
