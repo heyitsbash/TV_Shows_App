@@ -34,7 +34,7 @@ const TaskWrapper = ({ shows, pageShowCount }) => {
   };
 
   // loads more shows to the page, isFetchingDispatch limits calls to once per second
-  // pagination load takes number how many more pages to load
+  // paginationLoad takes number how many more pages to load
   const loadMorePages = () => {
     if (isFetching) {
       return;
@@ -42,7 +42,7 @@ const TaskWrapper = ({ shows, pageShowCount }) => {
     isFetchingDispatch(true);
     paginationLoad(15);
     Meteor.setTimeout(() => {
-      dispatch(isFetchingDispatch(false));
+      isFetchingDispatch(false);
     }, 1000);
   };
 
