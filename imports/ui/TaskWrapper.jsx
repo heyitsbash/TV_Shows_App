@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { withTracker } from 'meteor/react-meteor-data';
 import { Meteor } from 'meteor/meteor';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import {
   Column,
   Table,
@@ -13,13 +13,17 @@ import {
 import sortAction from '../redux/actions/sortAction.js';
 import callTrakt from '../redux/actions/tracktCall.js';
 import loadPaginationAction from '../redux/actions/loadPaginationAction.js';
-import tvShows from '../api/collections/tvShows.js';
+import isFetchingAction from '../redux/actions/isFetchingAction.js';
+import TvShows from '../api/collections/TvShows.js';
 
-const TaskWrapper = ({ shows, showCount }) => {
+const TaskWrapper = ({ shows, pageShowCount }) => {
+  const isFetching = useSelector((value) => value.isFetching);
   const dispatch = useDispatch();
   const sortingAction = () => dispatch(sortAction());
+  const isFetchingDispatch = (bool) => dispatch(isFetchingAction(bool));
   const callingTrakt = (url) => dispatch(callTrakt(url));
   const paginationLoad = (pages) => dispatch(loadPaginationAction(pages));
+  const totalAmountOfShows = Meteor.settings.public.totalShowCount;
 
   const changeListOrder = () => {
     sortingAction();
@@ -29,11 +33,19 @@ const TaskWrapper = ({ shows, showCount }) => {
     callingTrakt('https://api.trakt.tv/shows/464?extended=full');
   };
 
+  // loads more shows to the page, isFetchingDispatch limits calls to once per second
+  // pagination load takes number how many more pages to load
   const loadMorePages = () => {
-    paginationLoad(20);
+    if (isFetching) {
+      return;
+    }
+    isFetchingDispatch(true);
+    paginationLoad(15);
+    Meteor.setTimeout(() => {
+      dispatch(isFetchingDispatch(false));
+    }, 1000);
   };
 
-  // eslint-disable-next-line react/prop-types
   const renderImageCell = ({ cellData }) => {
     const image = `https://image.tmdb.org/t/p/w780${cellData}`;
     return (
@@ -47,10 +59,16 @@ const TaskWrapper = ({ shows, showCount }) => {
   };
 
   renderImageCell.displayName = 'renderImageCell';
+  renderImageCell.propTypes = {
+    cellData: PropTypes.string.isRequired,
+  };
 
   return (
     <div className="container">
       <div className="tableHeader">
+        <span>
+          Currently loaded - {pageShowCount} / {totalAmountOfShows}
+        </span>
         <button type="button" onClick={changeListOrder}>
           Order
         </button>
@@ -64,7 +82,7 @@ const TaskWrapper = ({ shows, showCount }) => {
       <div>
         <InfiniteLoader
           isRowLoaded={({ index }) => !!shows[index]}
-          loadMoreRows={loadMorePages}
+          loadMoreRows={isFetching ? () => {} : loadMorePages}
           rowCount={100000000}
         >
           {({ onRowsRendered, registerChild }) => (
@@ -80,26 +98,27 @@ const TaskWrapper = ({ shows, showCount }) => {
                       width={width}
                       scrollTop={scrollTop}
                       height={height}
-                      headerHeight={30}
+                      headerHeight={35}
                       rowHeight={250}
-                      rowCount={showCount}
+                      rowCount={pageShowCount}
                       rowGetter={({ index }) => shows[index]}
                     >
                       <Column
                         label="№"
                         dataKey="index"
+                        style={{ fontSize: '20px' }}
                         cellRenderer={renderIndexCell}
-                        width={width * 0.05}
+                        width={width * 0.1 + 28}
                       />
                       <Column
                         cellRenderer={renderImageCell}
-                        label="img"
+                        label="poster"
                         dataKey="image"
                         cellDataGetter={({ rowData }) => rowData.image}
-                        width={width * 0.25}
+                        width={width * 0.2 - 28}
                       />
                       <Column
-                        label="Name"
+                        label="show"
                         dataKey="title"
                         width={width * 0.3}
                       />
@@ -135,20 +154,23 @@ const TaskWrapper = ({ shows, showCount }) => {
 
 TaskWrapper.propTypes = {
   shows: PropTypes.array.isRequired,
-  showCount: PropTypes.number.isRequired,
+  pageShowCount: PropTypes.number.isRequired,
 };
 
 TaskWrapper.displayName = 'TaskWrapper';
 
 export default withTracker((props) => {
   const { loadPagination } = props.storeValue;
-  Meteor.subscribe('tvShows', loadPagination);
-  const sortMethod = props.storeValue.sort;
+  const sortOrder = props.storeValue.sort;
+  const sortMethod = { 'watched.allTime': sortOrder };
+  const dbPayload = {
+    limit: loadPagination,
+    sortMethod,
+  };
+  Meteor.subscribe('TvShows', dbPayload);
 
   return {
-    shows: tvShows
-      .find({}, { sort: { 'watched.allTime': sortMethod } })
-      .fetch(),
-    showCount: tvShows.find({}).count(),
+    shows: TvShows.find({}).fetch(),
+    pageShowCount: TvShows.find({}).count(),
   };
 })(TaskWrapper);
