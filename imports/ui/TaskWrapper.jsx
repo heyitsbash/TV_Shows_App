@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { withTracker } from 'meteor/react-meteor-data';
 import { Meteor } from 'meteor/meteor';
@@ -24,6 +24,25 @@ const TaskWrapper = ({ shows, pageShowCount }) => {
   const callingTrakt = (url) => dispatch(callTrakt(url));
   const paginationLoad = (pages) => dispatch(loadPaginationAction(pages));
   const totalAmountOfShows = Meteor.settings.public.totalShowCount;
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const openModal = () => {
+    setIsModalOpen(true);
+  };
+
+  const outsideClickCloseModal = (e) => {
+    const modalOverlay = document.querySelector('.modalOverlay');
+    if (e.target === modalOverlay) {
+      setIsModalOpen(false);
+    }
+  };
+
+  useEffect(() => {
+    window.addEventListener('click', outsideClickCloseModal);
+    return () => {
+      window.removeEventListener('click', outsideClickCloseModal);
+    };
+  }, [isModalOpen]);
 
   const changeListOrder = () => {
     sortingAction();
@@ -33,6 +52,7 @@ const TaskWrapper = ({ shows, pageShowCount }) => {
     callingTrakt('https://api.trakt.tv/shows/464?extended=full');
   };
 
+  // FIXME: IF MODAL IS OPEN RETURN AND DO NOT LOAD MORE PAGES
   // loads more shows to the page, isFetchingDispatch limits calls to once per second
   // paginationLoad takes number how many more pages to load
   const loadMorePages = () => {
@@ -40,6 +60,8 @@ const TaskWrapper = ({ shows, pageShowCount }) => {
       return;
     }
     isFetchingDispatch(true);
+    console.log(new Date().getSeconds());
+
     paginationLoad(15);
     Meteor.setTimeout(() => {
       isFetchingDispatch(false);
@@ -47,7 +69,12 @@ const TaskWrapper = ({ shows, pageShowCount }) => {
   };
 
   const renderImageCell = ({ cellData }) => {
-    const image = `https://image.tmdb.org/t/p/w780${cellData}`;
+    let image;
+    if (!cellData) {
+      image = `https://i.imgur.com/6GAi5oP.png`;
+    } else {
+      image = `https://image.tmdb.org/t/p/w780${cellData}`;
+    }
     return (
       <div className="tableImg" style={{ backgroundImage: `url(${image})` }} />
     );
@@ -65,6 +92,13 @@ const TaskWrapper = ({ shows, pageShowCount }) => {
 
   return (
     <div className="container">
+      {isModalOpen && (
+        <div className="modalOverlay">
+          <div className="modal">
+            <p>hi im a modal</p>
+          </div>
+        </div>
+      )}
       <div className="tableHeader">
         <span>
           Currently loaded - {pageShowCount} / {totalAmountOfShows}
@@ -77,6 +111,9 @@ const TaskWrapper = ({ shows, pageShowCount }) => {
         </button>
         <button type="button" onClick={loadMorePages}>
           Load More
+        </button>
+        <button type="button" onClick={openModal}>
+          open modal
         </button>
       </div>
       <div>
