@@ -10,6 +10,7 @@ import {
   WindowScroller,
   InfiniteLoader,
 } from 'react-virtualized';
+import ModalWindow from './ModalWindow.jsx';
 import sortAction from '../redux/actions/sortAction.js';
 import callTrakt from '../redux/actions/tracktCall.js';
 import loadPaginationAction from '../redux/actions/loadPaginationAction.js';
@@ -25,6 +26,7 @@ const TaskWrapper = ({ shows, pageShowCount }) => {
   const paginationLoad = (pages) => dispatch(loadPaginationAction(pages));
   const totalAmountOfShows = Meteor.settings.public.totalShowCount;
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalProps, setModalProps] = useState({});
 
   const openModal = () => {
     setIsModalOpen(true);
@@ -52,20 +54,34 @@ const TaskWrapper = ({ shows, pageShowCount }) => {
     callingTrakt('https://api.trakt.tv/shows/464?extended=full');
   };
 
-  // FIXME: IF MODAL IS OPEN RETURN AND DO NOT LOAD MORE PAGES
   // loads more shows to the page, isFetchingDispatch limits calls to once per second
   // paginationLoad takes number how many more pages to load
   const loadMorePages = () => {
-    if (isFetching) {
+    if (isFetching || isModalOpen) {
       return;
     }
     isFetchingDispatch(true);
-    console.log(new Date().getSeconds());
-
     paginationLoad(15);
     Meteor.setTimeout(() => {
       isFetchingDispatch(false);
     }, 1000);
+  };
+
+  const showModal = (cellData) => {
+    setModalProps(cellData);
+    openModal();
+  };
+
+  const renderModalCell = (cellData) => {
+    return (
+      <button
+        type="button"
+        style={{ cursor: 'pointer' }}
+        onClick={() => showModal(cellData)}
+      >
+        info
+      </button>
+    );
   };
 
   const renderImageCell = ({ cellData }) => {
@@ -85,6 +101,8 @@ const TaskWrapper = ({ shows, pageShowCount }) => {
     return index;
   };
 
+  showModal.displayName = 'showModal';
+  renderModalCell.displayName = 'renderModalCell';
   renderImageCell.displayName = 'renderImageCell';
   renderImageCell.propTypes = {
     cellData: PropTypes.string.isRequired,
@@ -92,13 +110,7 @@ const TaskWrapper = ({ shows, pageShowCount }) => {
 
   return (
     <div className="container">
-      {isModalOpen && (
-        <div className="modalOverlay">
-          <div className="modal">
-            <p>hi im a modal</p>
-          </div>
-        </div>
-      )}
+      {isModalOpen && <ModalWindow props={modalProps} />}
       <div className="tableHeader">
         <span>
           Currently loaded - {pageShowCount} / {totalAmountOfShows}
@@ -175,7 +187,14 @@ const TaskWrapper = ({ shows, pageShowCount }) => {
                         cellDataGetter={({ rowData }) =>
                           rowData.additionalInfo.first_air_date
                         }
-                        width={width * 0.2}
+                        width={width * 0.1}
+                      />
+                      <Column
+                        cellRenderer={renderModalCell}
+                        label="info"
+                        dataKey="loadModal"
+                        cellDataGetter={({ rowData }) => rowData}
+                        width={width * 0.1}
                       />
                     </Table>
                   )}
