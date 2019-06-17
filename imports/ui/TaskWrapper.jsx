@@ -15,6 +15,7 @@ import sortAction from '../redux/actions/sortAction.js';
 import callTrakt from '../redux/actions/tracktCall.js';
 import loadPaginationAction from '../redux/actions/loadPaginationAction.js';
 import isFetchingAction from '../redux/actions/isFetchingAction.js';
+import sortMethodAction from '../redux/actions/sortMethodAction.js';
 import TvShows from '../api/collections/TvShows.js';
 
 const TaskWrapper = ({ shows, pageShowCount }) => {
@@ -22,6 +23,7 @@ const TaskWrapper = ({ shows, pageShowCount }) => {
   const dispatch = useDispatch();
   const sortingAction = () => dispatch(sortAction());
   const isFetchingDispatch = (bool) => dispatch(isFetchingAction(bool));
+  const sortMethodDispatch = (string) => dispatch(sortMethodAction(string));
   const callingTrakt = (url) => dispatch(callTrakt(url));
   const paginationLoad = (pages) => dispatch(loadPaginationAction(pages));
   const totalAmountOfShows = Meteor.settings.public.totalShowCount;
@@ -101,6 +103,25 @@ const TaskWrapper = ({ shows, pageShowCount }) => {
     return index;
   };
 
+  const onHeaderClick = ({ dataKey }) => {
+    switch (dataKey) {
+      case 'first_air_date':
+        sortMethodDispatch('additionalInfo.first_air_date');
+        sortingAction();
+        break;
+      case 'title':
+        sortMethodDispatch('title');
+        sortingAction();
+        break;
+      case 'played_allTime':
+        sortMethodDispatch('played.allTime');
+        sortingAction();
+        break;
+      default:
+        break;
+    }
+  };
+
   showModal.displayName = 'showModal';
   renderModalCell.displayName = 'renderModalCell';
   renderImageCell.displayName = 'renderImageCell';
@@ -115,17 +136,8 @@ const TaskWrapper = ({ shows, pageShowCount }) => {
         <span>
           Currently loaded - {pageShowCount} / {totalAmountOfShows}
         </span>
-        <button type="button" onClick={changeListOrder}>
-          Order
-        </button>
         <button type="button" onClick={testAPIcall}>
           Test API
-        </button>
-        <button type="button" onClick={loadMorePages}>
-          Load More
-        </button>
-        <button type="button" onClick={openModal}>
-          open modal
         </button>
       </div>
       <div>
@@ -151,6 +163,7 @@ const TaskWrapper = ({ shows, pageShowCount }) => {
                       rowHeight={250}
                       rowCount={pageShowCount}
                       rowGetter={({ index }) => shows[index]}
+                      onHeaderClick={onHeaderClick}
                     >
                       <Column
                         label="№"
@@ -172,21 +185,31 @@ const TaskWrapper = ({ shows, pageShowCount }) => {
                         width={width * 0.3}
                       />
                       <Column
-                        label="Views Count"
-                        dataKey="watched_allTime"
+                        label="Views"
+                        dataKey="played_allTime"
                         cellDataGetter={({ rowData }) =>
-                          rowData.watched.allTime
+                          rowData.played.allTime
                             .toString()
                             .replace(/\d(?=(?:\d{3})+$)/g, '$&,')
                         }
                         width={width * 0.2}
                       />
                       <Column
-                        label="First Air Date"
+                        label="Air Date"
                         dataKey="first_air_date"
-                        cellDataGetter={({ rowData }) =>
-                          rowData.additionalInfo.first_air_date
-                        }
+                        cellDataGetter={({ rowData }) => {
+                          if (rowData.additionalInfo.first_air_date) {
+                            return new Date(
+                              ...rowData.additionalInfo.first_air_date.split(
+                                '-'
+                              )
+                            ).toLocaleString('en-us', {
+                              year: 'numeric',
+                              month: 'short',
+                            });
+                          }
+                          return '';
+                        }}
                         width={width * 0.1}
                       />
                       <Column
@@ -217,8 +240,10 @@ TaskWrapper.displayName = 'TaskWrapper';
 
 export default withTracker((props) => {
   const { loadPagination } = props.storeValue;
+  const sortValue = props.storeValue.sortMethod;
   const sortOrder = props.storeValue.sort;
-  const sortMethod = { 'watched.allTime': sortOrder };
+  const sortMethod = {};
+  sortMethod[sortValue] = sortOrder;
   const dbPayload = {
     limit: loadPagination,
     sortMethod,
