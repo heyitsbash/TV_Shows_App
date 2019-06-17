@@ -3,8 +3,11 @@ import ReduxThunk from 'redux-thunk';
 import appReducer from '../reducers/sortReducer.js';
 
 const initialState = {
+  sortMethod: 'played.allTime',
   sort: -1,
-  loadPagination: 5,
+  loadPagination: 50,
+  isFetching: false,
+  lastPaginationUpdate: Date.now(),
 };
 
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
