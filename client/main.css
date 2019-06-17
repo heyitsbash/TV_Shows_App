@@ -47,6 +47,32 @@ body {
   background-repeat: no-repeat;
   border: 1px solid black;
 }
+
+.imageHolder {
+  margin: 0 auto;
+  height: 150px;
+  width: 100%;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  border: 1px solid black;
+}
+
+.iframeContainer {
+  border: 1px solid black;
+  overflow: hidden;
+  padding-top: 56.25%;
+  position: relative;
+}
+
+.iframeContainer iframe {
+  border: 0;
+  height: 100%;
+  left: 0;
+  position: absolute;
+  top: 0;
+  width: 100%;
+}
  
 
 .tableHeader {
