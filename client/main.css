@@ -57,7 +57,6 @@ body {
   height: 150px;
   width: 100%;
   background-size: cover;
-  background-position: center;
   background-repeat: no-repeat;
   border: 1px solid black;
 }
@@ -120,9 +119,6 @@ body {
 .ReactVirtualized__Table {
   position: relative;
   top: 91px;
-}
-
-.ReactVirtualized__Table__Grid {
 }
 
 .ReactVirtualized__Table__headerRow {
@@ -189,16 +185,9 @@ body {
   overflow: hidden;
 }
 
-.ReactVirtualized__Table__headerColumn,
-.ReactVirtualized__Table__rowColumn {
-}
 .ReactVirtualized__Table__rowColumn {
   text-overflow: ellipsis;
   white-space: nowrap;
-}
-
-.ReactVirtualized__Table__headerColumn:first-of-type,
-.ReactVirtualized__Table__rowColumn:first-of-type {
 }
 
 .ReactVirtualized__Table__sortableHeaderColumn {

@@ -107,11 +107,17 @@ const ModalWindow = ({ props }) => {
 
   const getImage = () => {
     let imgSrc;
-    if (!rowData.image) {
+    if (!rowData.additionalInfo.images.backdrops.length) {
       imgSrc = `https://i.imgur.com/liRbyUs.png`;
       return imgSrc;
     }
-    imgSrc = `https://image.tmdb.org/t/p/w780${rowData.image}`;
+    imgSrc = `https://image.tmdb.org/t/p/w780${
+      rowData.additionalInfo.images.backdrops[
+        Math.floor(
+          Math.random() * rowData.additionalInfo.images.backdrops.length
+        )
+      ].file_path
+    }`;
     return imgSrc;
   };
 
@@ -139,7 +145,10 @@ const ModalWindow = ({ props }) => {
       trailer = noDataAvailable();
       return trailer;
     }
-    const trailerDataKey = rowData.additionalInfo.videos.results[0].key;
+    const trailerDataKey =
+      rowData.additionalInfo.videos.results[
+        Math.floor(Math.random() * rowData.additionalInfo.videos.results.length)
+      ].key;
     const trailerData = `https://www.youtube.com/embed/${trailerDataKey}`;
     trailer = (
       <div style={{ marginTop: 14 }} className="iframeContainer">
