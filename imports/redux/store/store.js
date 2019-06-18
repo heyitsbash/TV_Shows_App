@@ -3,6 +3,7 @@ import ReduxThunk from 'redux-thunk';
 import appReducer from '../reducers/sortReducer.js';
 
 const initialState = {
+  searchField: '',
   sortMethod: 'played.allTime',
   sort: -1,
   loadPagination: 50,

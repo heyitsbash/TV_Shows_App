@@ -20,12 +20,13 @@ writeToSettings();
 Meteor.publish('TvShows', (payload) => {
   const { sortMethod } = payload;
   const { limit } = payload;
-  let options = {
+  const { filter } = payload;
+  const options = {
     limit,
-    sort: {},
+    sort: sortMethod,
   };
-  options.sort = {};
-  options = { ...options, limit, sort: sortMethod };
-
-  return TvShows.find({}, options);
+  if (filter.title.$regex === '') {
+    return TvShows.find({}, options);
+  }
+  return TvShows.find(filter, { limit: options.limit });
 });

@@ -25,6 +25,11 @@ export default (state, action) => {
         ...state,
         sortMethod: action.payload,
       };
+    case 'SET_SEARCH_FIELD':
+      return {
+        ...state,
+        searchField: action.payload,
+      };
     default:
       return state;
   }

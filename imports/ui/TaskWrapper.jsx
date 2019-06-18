@@ -15,6 +15,7 @@ import sortAction from '../redux/actions/sortAction.js';
 import callTrakt from '../redux/actions/tracktCall.js';
 import loadPaginationAction from '../redux/actions/loadPaginationAction.js';
 import isFetchingAction from '../redux/actions/isFetchingAction.js';
+import searchFieldAction from '../redux/actions/searchFieldAction.js';
 import sortMethodAction from '../redux/actions/sortMethodAction.js';
 import TvShows from '../api/collections/TvShows.js';
 
@@ -24,11 +25,13 @@ const TaskWrapper = ({ shows, pageShowCount }) => {
   const sortingAction = () => dispatch(sortAction());
   const isFetchingDispatch = (bool) => dispatch(isFetchingAction(bool));
   const sortMethodDispatch = (string) => dispatch(sortMethodAction(string));
+  const searchFieldDispatch = (string) => dispatch(searchFieldAction(string));
   const callingTrakt = (url) => dispatch(callTrakt(url));
   const paginationLoad = (pages) => dispatch(loadPaginationAction(pages));
   const totalAmountOfShows = Meteor.settings.public.totalShowCount;
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalProps, setModalProps] = useState({});
+  const [inputVal, setInputVal] = useState('');
 
   const openModal = () => {
     setIsModalOpen(true);
@@ -48,8 +51,8 @@ const TaskWrapper = ({ shows, pageShowCount }) => {
     };
   }, [isModalOpen]);
 
-  const changeListOrder = () => {
-    sortingAction();
+  const handleInputChange = () => {
+    searchFieldDispatch(inputVal);
   };
 
   const testAPIcall = () => {
@@ -139,6 +142,14 @@ const TaskWrapper = ({ shows, pageShowCount }) => {
         <button type="button" onClick={testAPIcall}>
           Test API
         </button>
+        <form onKeyUp={handleInputChange} onSubmit={(e) => e.preventDefault()}>
+          <input
+            type="text"
+            placeholder="tv-show name"
+            value={inputVal}
+            onChange={(el) => setInputVal(el.target.value)}
+          />
+        </form>
       </div>
       <div>
         <InfiniteLoader
@@ -240,16 +251,24 @@ TaskWrapper.displayName = 'TaskWrapper';
 
 export default withTracker((props) => {
   const { loadPagination } = props.storeValue;
+  const searchField = props.storeValue.searchField.trim();
   const sortValue = props.storeValue.sortMethod;
   const sortOrder = props.storeValue.sort;
   const sortMethod = {};
   sortMethod[sortValue] = sortOrder;
+  const filter = { title: { $regex: searchField, $options: 'i' } };
   const dbPayload = {
     limit: loadPagination,
     sortMethod,
+    filter,
   };
   Meteor.subscribe('TvShows', dbPayload);
-
+  if (searchField !== '') {
+    return {
+      shows: TvShows.find({}, { sort: sortMethod }).fetch(),
+      pageShowCount: TvShows.find({}).count(),
+    };
+  }
   return {
     shows: TvShows.find({}).fetch(),
     pageShowCount: TvShows.find({}).count(),
