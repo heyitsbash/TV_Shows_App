@@ -1,8 +1,8 @@
-/* eslint-disable no-undef */
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 import axios from 'axios';
-// import TvShows from '../collections/TvShows.js';
+// eslint-disable-next-line import/no-useless-path-segments
+import TvShows from './../collections/TvShows.js';
 
 const traktAPIKey = Meteor.settings.private.traktApiKey;
 const tmdbAPIKey = Meteor.settings.private.tmdbApiKey;
