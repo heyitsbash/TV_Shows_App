@@ -9,6 +9,9 @@
     "lint": "eslint .",
     "lint:fix": "eslint . --fix"
   },
+  "engines": {
+    "node": "8.15.1"
+  },
   "dependencies": {
     "@babel/runtime": "^7.3.4",
     "axios": "^0.18.0",
