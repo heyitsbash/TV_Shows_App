@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import TvShows from '../collections/TvShows.js';
 import { writeToSettings, getSettingsFile } from './writeToSettings.js';
 
-const allShows = TvShows.find({}).count();
+const allShows = JSON.stringify(TvShows.find({}).count());
 const settingsFile = getSettingsFile();
 settingsFile.public.totalShowCount = allShows;
 writeToSettings(settingsFile);
