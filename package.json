@@ -16,13 +16,14 @@
     "react": "^16.5.0",
     "react-dom": "^16.5.0",
     "react-redux": "^7.1.0-rc.1",
+    "react-virtualized": "^9.21.1",
     "redux": "^4.0.1",
     "redux-thunk": "^2.3.0"
   },
   "husky": {
     "hooks": {
       "commit-msg": "commitlint -E HUSKY_GIT_PARAMS",
-      "pre-commit": "npm run lint:fix && git add ."
+      "pre-commit": "npm run lint:fix"
     }
   },
   "meteor": {

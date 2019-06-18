@@ -12,7 +12,6 @@ import {
 } from 'react-virtualized';
 import ModalWindow from './ModalWindow.jsx';
 import sortAction from '../redux/actions/sortAction.js';
-import callTrakt from '../redux/actions/tracktCall.js';
 import loadPaginationAction from '../redux/actions/loadPaginationAction.js';
 import isFetchingAction from '../redux/actions/isFetchingAction.js';
 import searchFieldAction from '../redux/actions/searchFieldAction.js';
@@ -26,9 +25,8 @@ const TaskWrapper = ({ shows, pageShowCount }) => {
   const isFetchingDispatch = (bool) => dispatch(isFetchingAction(bool));
   const sortMethodDispatch = (string) => dispatch(sortMethodAction(string));
   const searchFieldDispatch = (string) => dispatch(searchFieldAction(string));
-  const callingTrakt = (url) => dispatch(callTrakt(url));
   const paginationLoad = (pages) => dispatch(loadPaginationAction(pages));
-  const totalAmountOfShows = Meteor.settings.public.totalShowCount;
+  // const totalAmountOfShows = Meteor.settings.public.totalShowCount;
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalProps, setModalProps] = useState({});
   const [inputVal, setInputVal] = useState('');
@@ -53,10 +51,6 @@ const TaskWrapper = ({ shows, pageShowCount }) => {
 
   const handleInputChange = () => {
     searchFieldDispatch(inputVal);
-  };
-
-  const testAPIcall = () => {
-    callingTrakt('https://api.trakt.tv/shows/464?extended=full');
   };
 
   // loads more shows to the page, isFetchingDispatch limits calls to once per second
@@ -136,20 +130,21 @@ const TaskWrapper = ({ shows, pageShowCount }) => {
     <div className="container">
       {isModalOpen && <ModalWindow props={modalProps} />}
       <div className="tableHeader">
-        <span>
-          Currently loaded - {pageShowCount} / {totalAmountOfShows}
-        </span>
-        <button type="button" onClick={testAPIcall}>
-          Test API
-        </button>
-        <form onKeyUp={handleInputChange} onSubmit={(e) => e.preventDefault()}>
+        <span className="counter">{pageShowCount}</span>
+        <form
+          style={{ width: '50%', height: '45px' }}
+          onKeyUp={handleInputChange}
+          onSubmit={(e) => e.preventDefault()}
+        >
           <input
+            className="inputField"
             type="text"
-            placeholder="tv-show name"
+            placeholder="search by name"
             value={inputVal}
             onChange={(el) => setInputVal(el.target.value)}
           />
         </form>
+        <span className="tvShows">TV-Shows</span>
       </div>
       <div>
         <InfiniteLoader

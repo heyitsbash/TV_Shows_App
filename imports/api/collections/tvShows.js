@@ -1,4 +1,4 @@
 import { Mongo } from 'meteor/mongo';
 
-const tvShows = new Mongo.Collection('tvShows');
-export default tvShows;
+const TvShows = new Mongo.Collection('tvShows');
+export default TvShows;

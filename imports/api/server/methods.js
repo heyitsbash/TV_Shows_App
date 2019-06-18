@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 import axios from 'axios';
-import tvShows from '../collections/tvShows.js';
+import TvShows from '../collections/TvShows.js';
 
 const traktAPIKey = Meteor.settings.private.traktApiKey;
 const tmdbAPIKey = Meteor.settings.private.tmdbApiKey;
@@ -10,19 +10,19 @@ Meteor.methods({
   tasksInsert: (text) => {
     check(text, String);
 
-    return tvShows.insert({
+    return TvShows.insert({
       text,
       createdAt: new Date(),
     });
   },
   tasksRemove: (id) => {
     check(id, String);
-    return tvShows.remove(id);
+    return TvShows.remove(id);
   },
   tasksSetChecked: (id, setChecked) => {
     check(id, String);
     check(setChecked, Boolean);
-    return tvShows.update(id, { $set: { checked: setChecked } });
+    return TvShows.update(id, { $set: { checked: setChecked } });
   },
   callTraktAPI: (url) => {
     return axios({

@@ -1,26 +1,14 @@
 import { Meteor } from 'meteor/meteor';
-import FS from 'fs';
 import TvShows from '../collections/TvShows.js';
+import { writeToSettings, getSettingsFile } from './writeToSettings.js';
 
-const settingsFile = JSON.parse(
-  FS.readFileSync('../../../../../settings.json')
-);
 const allShows = TvShows.find({}).count();
+const settingsFile = getSettingsFile();
 settingsFile.public.totalShowCount = allShows;
-
-const writeToSettings = () => {
-  const updateSettingsFile = JSON.stringify(settingsFile, null, 2);
-  FS.writeFile('../../../../../settings.json', updateSettingsFile, () => {
-    // console.log(`Updated settings file..`);
-  });
-};
-
-writeToSettings();
+writeToSettings(settingsFile);
 
 Meteor.publish('TvShows', (payload) => {
-  const { sortMethod } = payload;
-  const { limit } = payload;
-  const { filter } = payload;
+  const { sortMethod, limit, filter } = payload;
   const options = {
     limit,
     sort: sortMethod,

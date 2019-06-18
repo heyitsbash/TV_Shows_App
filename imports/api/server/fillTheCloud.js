@@ -1,12 +1,14 @@
 /* eslint-disable no-console */
 import { Meteor } from 'meteor/meteor';
 import axios from 'axios';
-import tvShows from '../collections/tvShows.js';
+import TvShows from '../collections/TvShows.js';
 
 const traktAPIKey = Meteor.settings.private.traktApiKey;
 const tmdbAPIKey = Meteor.settings.private.tmdbApiKey;
 let withoutImagesDB = [];
 let tmdbInterval = '';
+
+// FIXME: mongodb atlas has limitations of 100 operations per second, fix that
 
 const fetchAdditionalData = async () => {
   const fortyItems = withoutImagesDB.splice(0, 40);
@@ -22,7 +24,7 @@ const fetchAdditionalData = async () => {
   const handleBadShows = () => {
     console.log(`handling ${brokenUrlTvShows.length} bad shows`);
     brokenUrlTvShows.forEach((element) => {
-      tvShows.remove({ showId: element });
+      TvShows.remove({ showId: element });
     });
     console.log('Done');
   };
@@ -41,7 +43,7 @@ const fetchAdditionalData = async () => {
         },
       });
 
-      tvShows.upsert(
+      TvShows.upsert(
         { showId: val.showId },
         {
           $set: {
@@ -83,7 +85,7 @@ const fetchAdditionalData = async () => {
 
 const anotherAxiosCall = async () => {
   try {
-    withoutImagesDB = tvShows.find({ image: { $exists: false } }).fetch();
+    withoutImagesDB = TvShows.find({ image: { $exists: false } }).fetch();
     console.log('Is there any images to fetch?');
 
     if (withoutImagesDB.length) {
@@ -129,7 +131,7 @@ const axiosCall = async (url) => {
     });
 
     array.forEach((val) => {
-      tvShows.upsert(
+      TvShows.upsert(
         { showId: val.showId },
         {
           $set: {
