@@ -3,8 +3,8 @@
   "private": true,
   "scripts": {
     "start": "meteor --settings settings.json",
-    "test": "meteor test --once --driver-package meteortesting:mocha",
-    "test-app": "TEST_WATCH=1 meteor test --full-app --driver-package meteortesting:mocha",
+    "test": "meteor test --driver-package=cultofcoders:mocha --port 3333 --settings settings.json",
+    "test-app": "meteor test --full-app --driver-package=cultofcoders:mocha --port 3333 --settings settings.json",
     "visualize": "meteor --production --extra-packages bundle-visualizer",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix"
@@ -50,6 +50,7 @@
     "eslint-plugin-prettier": "^3.1.0",
     "eslint-plugin-react": "^7.13.0",
     "eslint-plugin-react-hooks": "^1.6.0",
+    "expect": "^24.8.0",
     "husky": "^2.3.0",
     "prettier": "^1.17.1"
   }

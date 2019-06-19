@@ -26,7 +26,6 @@ const TaskWrapper = ({ shows, pageShowCount }) => {
   const sortMethodDispatch = (string) => dispatch(sortMethodAction(string));
   const searchFieldDispatch = (string) => dispatch(searchFieldAction(string));
   const paginationLoad = (pages) => dispatch(loadPaginationAction(pages));
-  // const totalAmountOfShows = Meteor.settings.public.totalShowCount;
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalProps, setModalProps] = useState({});
   const [inputVal, setInputVal] = useState('');

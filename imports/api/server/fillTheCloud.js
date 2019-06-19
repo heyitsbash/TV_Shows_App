@@ -8,8 +8,6 @@ const tmdbAPIKey = Meteor.settings.private.tmdbApiKey;
 let withoutImagesDB = [];
 let tmdbInterval = '';
 
-// FIXME: mongodb atlas has limitations of 100 operations per second, fix that
-
 const fetchAdditionalData = async () => {
   const fortyItems = withoutImagesDB.splice(0, 40);
   const imagesToFetch = withoutImagesDB.length;
@@ -53,6 +51,9 @@ const fetchAdditionalData = async () => {
           },
         }
       );
+      if (!fetchFortyItems.data.first_air_date) {
+        brokenUrlTvShows.push(val.showId);
+      }
     } catch (error) {
       const errorMessage = {
         status: error.response.status,
@@ -148,5 +149,7 @@ const axiosCall = async (url) => {
 };
 
 Meteor.setInterval(() => {
-  axiosCall('https://api.trakt.tv/shows/watched/all?page=1&limit=10000');
+  axiosCall('https://api.trakt.tv/shows/watched/all?page=1&limit=3000');
 }, 86400000);
+
+export { traktAPIKey, tmdbAPIKey };
