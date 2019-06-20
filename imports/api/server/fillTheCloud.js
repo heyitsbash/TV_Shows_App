@@ -6,69 +6,88 @@ import TvShows from '../collections/TvShows.js';
 const traktAPIKey = Meteor.settings.private.traktApiKey;
 const tmdbAPIKey = Meteor.settings.private.tmdbApiKey;
 let withoutImagesDB = [];
+const brokenUrlTvShows = [];
 let tmdbInterval = '';
+
+const handleBadShows = () => {
+  console.log(`handling ${brokenUrlTvShows.length} bad shows`);
+  brokenUrlTvShows.forEach((element) => {
+    TvShows.remove({ showId: element });
+  });
+  console.log('Done');
+};
+
+const addAdditionalInfoForShowsInMongoDB = ({ value }) => {
+  TvShows.upsert(
+    { showId: value.val.showId },
+    {
+      $set: {
+        image: value.fetchFortyItems.backdrop_path,
+        ...value.val,
+        additionalInfo: { ...value.fetchFortyItems },
+      },
+    }
+  );
+};
+
+const axiosTmdbCall = async (url, val) => {
+  try {
+    if (!url) {
+      throw Error('bad url');
+    }
+    if (!val) {
+      throw Error('bad val');
+    }
+    const fetchFortyItems = await axios({
+      method: 'get',
+      url,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+    if (!fetchFortyItems.data.first_air_date) {
+      brokenUrlTvShows.push(val.showId);
+    }
+    const responseReturn = {
+      type: 'response',
+      value: {
+        fetchFortyItems: fetchFortyItems.data,
+        val,
+      },
+    };
+    return responseReturn;
+  } catch (error) {
+    const errorMessage = {
+      error,
+      status: error.response.status,
+      statusText: error.response.statusText,
+      failedUrl: error.response.config.url,
+      method: error.response.config.method,
+      statusCode: error.response.data.status_code,
+      statusMessage: error.response.data.status_message,
+      showTitle: val.title,
+      showId: val.showId,
+    };
+    brokenUrlTvShows.push(errorMessage.showId);
+    const errorReturn = {
+      type: 'error',
+      errorMessage,
+    };
+    return errorReturn;
+  }
+};
 
 const fetchAdditionalData = async () => {
   const fortyItems = withoutImagesDB.splice(0, 40);
   const imagesToFetch = withoutImagesDB.length;
-  const brokenUrlTvShows = [];
 
   if (imagesToFetch) {
     console.log(`Items left to fetch: ${imagesToFetch}`);
-  } else {
-    console.log('Done fetching images');
   }
-
-  const handleBadShows = () => {
-    console.log(`handling ${brokenUrlTvShows.length} bad shows`);
-    brokenUrlTvShows.forEach((element) => {
-      TvShows.remove({ showId: element });
-    });
-    console.log('Done');
-  };
-
   if (!imagesToFetch) {
+    console.log('stopping tmdbInterval interval');
     Meteor.clearInterval(tmdbInterval);
   }
-
-  const makeCall = async (url, val) => {
-    try {
-      const fetchFortyItems = await axios({
-        method: 'get',
-        url,
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-
-      TvShows.upsert(
-        { showId: val.showId },
-        {
-          $set: {
-            image: fetchFortyItems.data.backdrop_path,
-            ...val,
-            additionalInfo: { ...fetchFortyItems.data },
-          },
-        }
-      );
-      if (!fetchFortyItems.data.first_air_date) {
-        brokenUrlTvShows.push(val.showId);
-      }
-    } catch (error) {
-      const errorMessage = {
-        status: error.response.status,
-        statusText: error.response.statusText,
-        failedUrl: error.response.config.url,
-        method: error.response.config.method,
-        statusCode: error.response.data.status_code,
-        statusMessage: error.response.data.status_message,
-        showTitle: val.title,
-        showId: val.showId,
-      };
-      brokenUrlTvShows.push(errorMessage.showId);
-      // console.log(errorMessage);
-    }
-  };
 
   await Promise.all(
     fortyItems.map(async (val) => {
@@ -78,13 +97,16 @@ const fetchAdditionalData = async () => {
         return;
       }
       const url = `https://api.themoviedb.org/3/tv/${showId}?api_key=${tmdbAPIKey}&language=en-US&append_to_response=images,videos&include_image_language=ru,null`;
-      await makeCall(url, val);
+      const axiosTmdbResponse = await axiosTmdbCall(url, val);
+      if (axiosTmdbResponse.type === 'response') {
+        await addAdditionalInfoForShowsInMongoDB(axiosTmdbResponse);
+      }
     })
   );
-  handleBadShows();
+  await handleBadShows();
 };
 
-const anotherAxiosCall = async () => {
+const initializeFetchingAdditionalTvShowData = async () => {
   try {
     withoutImagesDB = TvShows.find({ image: { $exists: false } }).fetch();
     console.log('Is there any images to fetch?');
@@ -102,8 +124,11 @@ const anotherAxiosCall = async () => {
   }
 };
 
-const axiosCall = async (url) => {
+const axiosTraktCall = async (url) => {
   try {
+    if (!url) {
+      throw Error('bad url');
+    }
     const traktDBWatched = await axios({
       method: 'get',
       url,
@@ -113,43 +138,69 @@ const axiosCall = async (url) => {
         'trakt-api-key': traktAPIKey,
       },
     });
-    console.log('response log');
-
-    const array = [];
-    traktDBWatched.data.forEach((val) => {
-      const item = {
-        played: {
-          allTime: val.play_count,
-        },
-        watched: {
-          allTime: val.watcher_count,
-        },
-        title: val.show.title,
-        showId: val.show.ids.trakt,
-        idList: val.show.ids,
-      };
-      array.push(item);
-    });
-
-    array.forEach((val) => {
-      TvShows.upsert(
-        { showId: val.showId },
-        {
-          $set: {
-            ...val,
-          },
-        }
-      );
-    });
-    anotherAxiosCall();
+    const responseReturn = {
+      type: 'response',
+      value: traktDBWatched.data,
+    };
+    return responseReturn;
   } catch (error) {
-    console.error('error log');
-    console.error(error);
+    console.log('axiosTraktCall failed with error');
+    const errorReturn = {
+      type: 'error',
+      error,
+    };
+    console.log(errorReturn);
+    return errorReturn;
   }
 };
 
+const getDataFromAxiosAndPutItInArray = (axiosData) => {
+  const array = [];
+  axiosData.value.forEach((val) => {
+    const item = {
+      played: {
+        allTime: val.play_count,
+      },
+      watched: {
+        allTime: val.watcher_count,
+      },
+      title: val.show.title,
+      showId: val.show.ids.trakt,
+      idList: val.show.ids,
+    };
+    array.push(item);
+  });
+  return array;
+};
+
+const pushEachItemFromArrayIntoMongoDB = (arrayOfShows) => {
+  arrayOfShows.forEach((val) => {
+    TvShows.upsert(
+      { showId: val.showId },
+      {
+        $set: {
+          ...val,
+        },
+      }
+    );
+  });
+};
+
+const initializeTvShowFetching = async (url) => {
+  const axiosData = await axiosTraktCall(url);
+  if (axiosData.type === 'error') {
+    console.log('Axios call has failed, exiting initializeTvShowFetching...');
+    return;
+  }
+  const arrayOfShows = await getDataFromAxiosAndPutItInArray(axiosData);
+  await pushEachItemFromArrayIntoMongoDB(arrayOfShows);
+  initializeFetchingAdditionalTvShowData();
+};
+
 Meteor.setInterval(() => {
-  axiosCall('https://api.trakt.tv/shows/watched/all?page=1&limit=3000');
+  initializeTvShowFetching(
+    'https://api.trakt.tv/shows/watched/all?page=1&limit=3000'
+  );
 }, 86400000);
 
-export { traktAPIKey, tmdbAPIKey };
+export { traktAPIKey, tmdbAPIKey, axiosTraktCall };

@@ -1,11 +1,11 @@
 import expect from 'expect';
-import { traktAPIKey, tmdbAPIKey } from '../../api/server/fillTheCloud.js';
+import { traktAPIKey, tmdbAPIKey, axiosCall } from '../../api/server/fillTheCloud.js';
 
-describe('fillTheCloud', function () {
-	it('trakt key should be a string', function () {
-		typeof traktAPIKey === 'string'
+describe('fillTheCloud', () => {
+	it('trakt key should be a string', () => {
+		expect(typeof traktAPIKey === 'string').toBeTruthy();
 	});
-	it('tmdb key should be a string', function () {
-		typeof traktAPIKey === 'string'
+	it('tmdb key should be a string', () => {
+		expect(typeof tmdbAPIKey === 'string').toBeTruthy();
 	});
 });

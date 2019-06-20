@@ -10,7 +10,7 @@ import {
   WindowScroller,
   InfiniteLoader,
 } from 'react-virtualized';
-import ModalWindow from './ModalWindow.jsx';
+import ModalWindowWrapper from './ModalWindowWrapper.jsx';
 import sortAction from '../redux/actions/sortAction.js';
 import loadPaginationAction from '../redux/actions/loadPaginationAction.js';
 import isFetchingAction from '../redux/actions/isFetchingAction.js';
@@ -18,7 +18,7 @@ import searchFieldAction from '../redux/actions/searchFieldAction.js';
 import sortMethodAction from '../redux/actions/sortMethodAction.js';
 import TvShows from '../api/collections/TvShows.js';
 
-const TaskWrapper = ({ shows, pageShowCount }) => {
+const TableWrapper = ({ shows, pageShowCount }) => {
   const isFetching = useSelector((value) => value.isFetching);
   const dispatch = useDispatch();
   const sortingAction = () => dispatch(sortAction());
@@ -127,7 +127,7 @@ const TaskWrapper = ({ shows, pageShowCount }) => {
 
   return (
     <div className="container">
-      {isModalOpen && <ModalWindow props={modalProps} />}
+      {isModalOpen && <ModalWindowWrapper props={modalProps} />}
       <div className="tableHeader">
         <span className="counter">{pageShowCount}</span>
         <form
@@ -236,12 +236,12 @@ const TaskWrapper = ({ shows, pageShowCount }) => {
   );
 };
 
-TaskWrapper.propTypes = {
+TableWrapper.propTypes = {
   shows: PropTypes.array.isRequired,
   pageShowCount: PropTypes.number.isRequired,
 };
 
-TaskWrapper.displayName = 'TaskWrapper';
+TableWrapper.displayName = 'TableWrapper';
 
 export default withTracker((props) => {
   const { loadPagination } = props.storeValue;
@@ -267,4 +267,4 @@ export default withTracker((props) => {
     shows: TvShows.find({}).fetch(),
     pageShowCount: TvShows.find({}).count(),
   };
-})(TaskWrapper);
+})(TableWrapper);
