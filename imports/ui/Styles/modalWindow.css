@@ -1,0 +1,48 @@
+.modal {
+	background-color: #f4f4f4;
+	margin: 20% auto;
+	padding: 20px;
+	max-width: 750px;
+	box-shadow: 0 5px 8px 0 rgba(0, 0, 0, 0.2), 0 7px 20px 0 rgba(0, 0, 0, 0.2);
+}
+
+.modal h2 {
+	margin-top: 0;
+	margin-bottom: 0;
+}
+
+.modalOverlay {
+	position: fixed;
+	z-index: 11;
+	left: 0;
+	top: 0;
+	height: 100%;
+	width: 100%;
+	overflow: auto;
+	background-color: rgba(0, 0, 0, 0.3);
+}
+
+.imageHolder {
+	margin: 0 auto;
+	height: 150px;
+	width: 100%;
+	background-size: cover;
+	background-repeat: no-repeat;
+	border: 1px solid black;
+}
+
+.iframeContainer {
+	border: 1px solid black;
+	overflow: hidden;
+	padding-top: 56.25%;
+	position: relative;
+}
+
+.iframeContainer iframe {
+	border: 0;
+	height: 100%;
+	left: 0;
+	position: absolute;
+	top: 0;
+	width: 100%;
+}

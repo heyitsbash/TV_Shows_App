@@ -1,0 +1,164 @@
+*:focus {
+	outline: none;
+}
+
+.container {
+	max-width: 900px;
+	margin: 0 auto;
+	min-height: 100%;
+}
+
+.tableHeader {
+	max-width: 900px;
+	width: 100%;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	background-color: #315481;
+	background-image: linear-gradient(to top, #0052d4, #4364f7, #6fb1fc);
+	box-sizing: border-box;
+	height: 56px;
+	position: fixed;
+	z-index: 10;
+}
+
+.tableHeader form {
+	width: 50%;
+	height: 45px;
+}
+
+.counter {
+	font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+	font-size: 25px;
+	color: #fff;
+	margin-left: 20px;
+}
+
+.inputField {
+	box-sizing: border-box;
+	width: 100%;
+	height: 100%;
+	border: none;
+	border-radius: 5px;
+	outline: none;
+	padding: 10px;
+	font-size: 16px;
+}
+
+.tvShows {
+	font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+	font-size: 25px;
+	color: #fff;
+	margin-right: 20px;
+}
+
+.tableImg {
+	height: 210px;
+	width: 150px;
+	margin-bottom: 8px;
+	background-size: cover;
+	background-position: center;
+	background-repeat: no-repeat;
+	border: 1px solid black;
+}
+
+.modalButton {
+	font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+	font-size: 14px;
+}
+
+.ReactVirtualized__Table {
+	position: relative;
+	top: 91px;
+}
+
+.ReactVirtualized__Table__headerRow {
+	font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+	cursor: pointer;
+	background-color: white;
+	z-index: 10;
+	position: fixed;
+	top: 56px;
+	font-weight: 700;
+	text-transform: uppercase;
+	display: -webkit-box;
+	display: -ms-flexbox;
+	display: flex;
+	-webkit-box-orient: horizontal;
+	-webkit-box-direction: normal;
+	-ms-flex-direction: row;
+	flex-direction: row;
+	-webkit-box-align: center;
+	-ms-flex-align: center;
+	align-items: center;
+	text-align: center;
+	box-shadow: 0 5px 5px -3px rgba(0, 0, 0, 0.2);
+}
+
+.ReactVirtualized__Table__row {
+	display: -webkit-box;
+	display: -ms-flexbox;
+	display: flex;
+	-webkit-box-orient: horizontal;
+	-webkit-box-direction: normal;
+	-ms-flex-direction: row;
+	flex-direction: row;
+	-webkit-box-align: center;
+	-ms-flex-align: center;
+	align-items: center;
+	border-radius: 0 0 15px 15px;
+	text-align: center;
+	font-size: 16px;
+}
+
+.ReactVirtualized__Table__row:after {
+	content: '';
+	position: absolute;
+	bottom: 0px;
+	left: 0;
+	width: 100%;
+	height: 10px;
+	background-color: #315481;
+}
+
+.ReactVirtualized__Table__row:nth-child(odd) {
+	background: #fafafa;
+}
+
+.ReactVirtualized__Table__row:nth-child(even) {
+	background: #ebebeb;
+}
+
+.ReactVirtualized__Table__headerTruncatedText {
+	display: inline-block;
+	max-width: 100%;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+	overflow: hidden;
+}
+
+.ReactVirtualized__Table__rowColumn {
+	overflow-wrap: break-word;
+}
+
+.ReactVirtualized__Table__sortableHeaderColumn {
+	cursor: pointer;
+}
+
+.ReactVirtualized__Table__sortableHeaderIconContainer {
+	display: -webkit-box;
+	display: -ms-flexbox;
+	display: flex;
+	-webkit-box-align: center;
+	-ms-flex-align: center;
+	align-items: center;
+}
+
+.ReactVirtualized__Table__sortableHeaderIcon {
+	-webkit-box-flex: 0;
+	-ms-flex: 0 0 24px;
+	flex: 0 0 24px;
+	height: 1em;
+	width: 1em;
+	fill: currentColor;
+}

@@ -103,7 +103,7 @@ const fetchAdditionalData = async () => {
       }
     })
   );
-  await handleBadShows();
+  handleBadShows();
 };
 
 const initializeFetchingAdditionalTvShowData = async () => {

@@ -17,6 +17,7 @@ import isFetchingAction from '../redux/actions/isFetchingAction.js';
 import searchFieldAction from '../redux/actions/searchFieldAction.js';
 import sortMethodAction from '../redux/actions/sortMethodAction.js';
 import TvShows from '../api/collections/TvShows.js';
+import './Styles/tableWrapper.css';
 
 const TableWrapper = ({ shows, pageShowCount }) => {
   const isFetching = useSelector((value) => value.isFetching);
@@ -74,6 +75,7 @@ const TableWrapper = ({ shows, pageShowCount }) => {
     return (
       <button
         type="button"
+        className="modalButton"
         style={{ cursor: 'pointer' }}
         onClick={() => showModal(cellData)}
       >
@@ -130,11 +132,7 @@ const TableWrapper = ({ shows, pageShowCount }) => {
       {isModalOpen && <ModalWindowWrapper props={modalProps} />}
       <div className="tableHeader">
         <span className="counter">{pageShowCount}</span>
-        <form
-          style={{ width: '50%', height: '45px' }}
-          onKeyUp={handleInputChange}
-          onSubmit={(e) => e.preventDefault()}
-        >
+        <form onKeyUp={handleInputChange} onSubmit={(e) => e.preventDefault()}>
           <input
             className="inputField"
             type="text"

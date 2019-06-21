@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import './Styles/modalWindow.css';
 
 const ModalWindow = (props) => {
   const {
@@ -16,10 +17,9 @@ const ModalWindow = (props) => {
 
   return (
     <div>
-      <div className="blurIt" />
       <div className="modalOverlay">
         <div className="modal">
-          <h2 style={{ marginTop: 0, marginBottom: 0 }}>{Title}</h2>
+          <h2>{Title}</h2>
           <div>{ShowAge}</div>
           <div
             className="imageHolder"
@@ -56,9 +56,12 @@ ModalWindow.propTypes = {
   Genres: PropTypes.string.isRequired,
   Title: PropTypes.string.isRequired,
   Image: PropTypes.string.isRequired,
-  ShowAge: PropTypes.element.isRequired,
-  Homepage: PropTypes.element.isRequired,
-  Trailer: PropTypes.element.isRequired,
+  ShowAge: PropTypes.oneOfType([PropTypes.element, PropTypes.string])
+    .isRequired,
+  Homepage: PropTypes.oneOfType([PropTypes.element, PropTypes.string])
+    .isRequired,
+  Trailer: PropTypes.oneOfType([PropTypes.element, PropTypes.string])
+    .isRequired,
 };
 
 ModalWindow.displayName = 'ModalWindow';
